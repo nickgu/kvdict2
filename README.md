@@ -12,10 +12,14 @@ key-value dict for python.
 ## Convert your text data to kvdict2 format.
 
 you can use this command to do:
-    > python kvdict2.py -f <your_text_input> -b <kvdict2_output_dict>
+```
+> python kvdict2.py -f <your_text_input> -b <kvdict2_output_dict>
+```
 
 then if you want to check the dict. you can use this command.
-    > python kvdict2.py -i <kvdict2_output_dict>
+```
+> python kvdict2.py -i <kvdict2_output_dict>
+```
 input query to see if output is ok.
 
 ## Use dict in your python code.
