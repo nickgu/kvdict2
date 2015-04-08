@@ -38,7 +38,7 @@ struct KVDict_t {
     KVMemoryBatchDict_t memory_dict;
 
     // Ӳ�̴ʵ�ṹ
-    char buffer[1024*128];
+    char buffer[1024*1024*16];
     FileOffsetDict_t disk_dict;
     FILE* fp;
 };
