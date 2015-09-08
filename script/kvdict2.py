@@ -14,6 +14,8 @@ class KVDict:
         logging.info('GET C_KVDICT : handle=%d' % self.__dict_handle)
 
     def load(self, filename):
+        logging.info('LOAD: %s' % filename)
+        print >> sys.stderr, 'loading: %s' % (filename)
         c_kvdict2.load(self.__dict_handle, filename, True )
 
     def find(self, key):
@@ -26,6 +28,8 @@ class KVDict:
         return c_kvdict2.write_mem_bin(self.__dict_handle, output_file)
 
     def load_bin(self, input_file):
+        logging.info('LOAD: %s' % input_file)
+        print >> sys.stderr, 'loading: %s' % (input_file)
         return c_kvdict2.load_mem_bin(self.__dict_handle, input_file)
 
 

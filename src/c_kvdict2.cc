@@ -224,6 +224,10 @@ int load(int dict_id,
     size_t fpos_b = ftell(fp);
     while (fgets(line, MAX_LINE_LENGTH, fp)) {
         unsigned line_len = strlen(line);
+        if (line_len == 0) {
+            continue;
+        }
+
         // strip.
         line[line_len-1] = 0;
         size_t fpos_e = ftell(fp);
@@ -446,7 +450,7 @@ static PyMethodDef CKVDictFunc[] = {
     { "find", wrapper_seek, METH_VARARGS, "search dict. return None if not exists."},
     // ÊÇ·ñ°üº¬ÌØ¶¨key
     { "has", wrapper_has, METH_VARARGS, "check key in dict."},
-    // ½«ÄÚ´æ´ÊµäÐòÁÐ»¯µ½ÎÄ¼þ
+    // ½«ÄÚæ´ÊµäÐòÁÐ»¯µ½ÎÄ¼þ
     { "write_mem_bin", wrapper_write_mem_bin, METH_VARARGS, "write mem-dict to bin file." },
     // ¶ÁÈ¡ÐòÁÐ»¯ºÃµÄÎÄ¼þ
     { "load_mem_bin", wrapper_load_mem_bin, METH_VARARGS, "load mem-dict to bin file." },
