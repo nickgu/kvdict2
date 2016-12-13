@@ -3,16 +3,16 @@
  * @author nickgu
  * @date 2013/06/26 14:15:34
  * @brief 
- *      ÓÃPythonµÄC½Ó¿ÚÊµÏÖÒ»¸ö´ÊµäÀà¡£
- *      ¿ÉÒÔÃÖ²¹Python×Ô´ø´ÊµäĞÔÄÜÎÊÌâ¡£
- *       ÄÚ´æKV´Êµä£º
- *       - ½«ÎÄ¼ş¶ÁÈëKey-ValueĞÅÏ¢£¨Ä¿Ç°¾ÖÏŞ¶¼ÊÇÎÄ±¾£©
- *       - ½«¹şÏ£ĞÅÏ¢ĞòÁĞ»¯µ½ÎÄ¼ş£¨·½±ãÔÚ´Ëµ÷ÓÃ£©
- *       Ó²ÅÌKVË÷Òı´Êµä
- *       - ¹¹½¨´óÎÄ¼şµÄË÷Òı
+ *      ç”¨Pythonçš„Cæ¥å£å®ç°ä¸€ä¸ªè¯å…¸ç±»ã€‚
+ *      å¯ä»¥å¼¥è¡¥Pythonè‡ªå¸¦è¯å…¸æ€§èƒ½é—®é¢˜ã€‚
+ *       å†…å­˜KVè¯å…¸ï¼š
+ *       - å°†æ–‡ä»¶è¯»å…¥Key-Valueä¿¡æ¯ï¼ˆç›®å‰å±€é™éƒ½æ˜¯æ–‡æœ¬ï¼‰
+ *       - å°†å“ˆå¸Œä¿¡æ¯åºåˆ—åŒ–åˆ°æ–‡ä»¶ï¼ˆæ–¹ä¾¿åœ¨æ­¤è°ƒç”¨ï¼‰
+ *       ç¡¬ç›˜KVç´¢å¼•è¯å…¸
+ *       - æ„å»ºå¤§æ–‡ä»¶çš„ç´¢å¼•
  *  
  **/
-#include <python2.7/Python.h> //°üº¬pythonµÄÍ·ÎÄ¼ş
+#include <python2.7/Python.h> //åŒ…å«pythonçš„å¤´æ–‡ä»¶
 
 #include <map>
 #include <string>
@@ -31,14 +31,14 @@ typedef KeyIndex_t<KVD_KeyInfo_t> FileOffsetDict_t;
  *  KVDict
  */
 struct KVDict_t {
-    // µ±Ç°´ÊµäÊÇ·ñÊÇÄÚ´æ´Êµä
+    // å½“å‰è¯å…¸æ˜¯å¦æ˜¯å†…å­˜è¯å…¸
     bool memory_mode;
 
-    // ÄÚ´æ´Êµä½á¹¹
+    // å†…å­˜è¯å…¸ç»“æ„
     KVMemoryBatchDict_t memory_dict;
 
-    // Ó²ÅÌ´Êµä½á¹¹
-    char buffer[1024*1024*16];
+    // ç¡¬ç›˜è¯å…¸ç»“æ„
+    char buffer[1024*16*1024];
     FileOffsetDict_t disk_dict;
     FILE* fp;
 };
@@ -166,7 +166,7 @@ int creat_sign_f64(char* psrc,int slen,unsigned int* sign1,unsigned int * sign2)
 
 
 /**
- *  ·â×°Ç©Ãûº¯Êı
+ *  å°è£…ç­¾åå‡½æ•°
  */
 static size_t calc_sign(const char* s) {
     unsigned slen = strlen(s);
@@ -179,7 +179,7 @@ static size_t calc_sign(const char* s) {
 };
 
 /**
- *  ·â×°Ç©Ãû²Ù×÷
+ *  å°è£…ç­¾åæ“ä½œ
  */
 struct Sign_t {
     size_t operator() (const string& s) const {
@@ -188,7 +188,7 @@ struct Sign_t {
 };
 
 /*
- * Ëæ»ú·ÃÎÊÎÄ¼ş»ñÈ¡Ò»¸öÊı¾İ
+ * éšæœºè®¿é—®æ–‡ä»¶è·å–ä¸€ä¸ªæ•°æ®
  */
 int fgets_random(char* buffer,
                 size_t buffer_size, 
@@ -204,7 +204,7 @@ int fgets_random(char* buffer,
 }
 
 /**
- *  ¼ÓÔØÎÄ¼şµ½´Êµä
+ *  åŠ è½½æ–‡ä»¶åˆ°è¯å…¸
  */
 int load(int dict_id, 
         const char* filename, 
@@ -229,7 +229,7 @@ int load(int dict_id,
         }
 
         // strip.
-        line[line_len-1] = 0;
+        line[--line_len] = 0;
         size_t fpos_e = ftell(fp);
 
         size_t sign;
@@ -248,16 +248,90 @@ int load(int dict_id,
         // get key-sign.
         sign = calc_sign(line);
 
-        // Ã¿Ò»ĞĞ¶¼»á±»Â¼Èë£¬Èç¹ûÖ»ÓĞÒ»ÁĞ£¬ÔòÕûÁĞ×÷Îªkey£¬valueÎª¿Õ
+        // æ¯ä¸€è¡Œéƒ½ä¼šè¢«å½•å…¥ï¼Œå¦‚æœåªæœ‰ä¸€åˆ—ï¼Œåˆ™æ•´åˆ—ä½œä¸ºkeyï¼Œvalueä¸ºç©º
         if (pdict->memory_mode) {
             // insert into memory dict.
-            pdict->memory_dict.append(sign, value_pos, value_length+1);
+            pdict->memory_dict.append(sign, value_pos, value_length);
 
         } else {
             KVD_KeyInfo_t d;
             d.key = sign;
             d.data_offset = fpos_b + value_offset;
             d.data_length = fpos_e - 1 - fpos_b - value_offset;
+            // insert into file offset dict.
+            pdict->disk_dict.append_key_info(d);
+        }
+        fpos_b = fpos_e;
+
+        counter ++;
+        if (counter % 1000000==0) {
+            fprintf(stderr, "Load %d records over.\n", counter);
+        }
+    }
+    if (pdict->memory_mode) {
+        fprintf(stderr, "Begin to make index..\n");
+        pdict->memory_dict.append_complete();
+        fprintf(stderr, "make index over.\n");
+        fclose(fp);
+    } else {
+        fprintf(stderr, "Begin to make index..\n");
+        pdict->disk_dict.make_index();
+        fprintf(stderr, "make index over.\n");
+        pdict->fp = fp;
+    }
+    fprintf(stderr, "Load dict over! memory_records=%u disk_records=%u\n", 
+            pdict->memory_dict.size(), 
+            pdict->disk_dict.size());
+    return 0;
+}
+
+/**
+ *  åŠ è½½æ–‡ä»¶åˆ°è¯å…¸
+ */
+int load_bin(int dict_id, 
+        const char* filename, 
+        bool load_in_memory) 
+{
+    KVDict_t* pdict = g_dict_pool[dict_id];
+    pdict->memory_mode = load_in_memory;
+    //fprintf(stderr, "FCNT=%d LOADMEMORY=%d\n", fcnt, load_in_memory);
+    char* line = pdict->buffer;
+    size_t MAX_LINE_LENGTH = sizeof(pdict->buffer);
+    unsigned counter = 0;
+    FILE* fp = fopen(filename, "rb");
+    if (fp==NULL) {
+        fprintf(stderr, "Cannot open file : %s\n", filename);
+        return -1;
+    }
+    size_t fpos_b = ftell(fp);
+    unsigned key_length = 0;
+    while (fread(&key_length, sizeof(unsigned), 1, fp) != 0) {
+        // strip.
+        fread(line, sizeof(char), key_length, fp);
+        size_t sign;
+        line[key_length] = 0;
+        sign = calc_sign(line);
+        unsigned value_length = 0;
+        fread(&value_length, sizeof(unsigned), 1, fp);
+        value_length = value_length > MAX_LINE_LENGTH? MAX_LINE_LENGTH : value_length;
+        fread(line, sizeof(char), value_length, fp);
+
+        const char* value_pos = line;
+        unsigned value_offset = key_length + 2;
+
+        size_t fpos_e = ftell(fp);
+        // get key-sign.
+
+        // æ¯ä¸€è¡Œéƒ½ä¼šè¢«å½•å…¥ï¼Œå¦‚æœåªæœ‰ä¸€åˆ—ï¼Œåˆ™æ•´åˆ—ä½œä¸ºkeyï¼Œvalueä¸ºç©º
+        if (pdict->memory_mode) {
+            // insert into memory dict.
+            pdict->memory_dict.append(sign, value_pos, value_length);
+
+        } else {
+            KVD_KeyInfo_t d;
+            d.key = sign;
+            d.data_offset = fpos_b + value_offset;
+            d.data_length = fpos_e - fpos_b - value_offset;
             // insert into file offset dict.
             pdict->disk_dict.append_key_info(d);
         }
@@ -306,22 +380,22 @@ int seek(int dict_id,
         const char* k, 
         string& out) 
 {
+    //fprintf(stderr, "dict_id: %d\n", dict_id);
     KVDict_t* pdict = g_dict_pool[dict_id];
-    string key = k;
-    size_t sign = calc_sign(key.c_str());
+    size_t sign = calc_sign(k);
     if (pdict->memory_mode) {
         size_t out_size = sizeof(pdict->buffer);
         if ( !pdict->memory_dict.find(sign, pdict->buffer, &out_size) ) {
             return 0;
         }
-        out = string(pdict->buffer);
+        out = string(pdict->buffer, out_size);
     } else {
         KVD_KeyInfo_t key_info;
         if ( !pdict->disk_dict.find(sign, &key_info) ) {
             return 0;
         }
         fgets_random(pdict->buffer, sizeof(pdict->buffer), key_info, pdict->fp);
-        out = string(pdict->buffer);
+        out = string(pdict->buffer, key_info.data_length);
     }
     return 1;
 }
@@ -333,20 +407,26 @@ static PyObject * wrapper_create(PyObject *self, PyObject *args)  {
     return Py_BuildValue("i", did);
 }
 
-// 2 python °ü×°
+// 2 python åŒ…è£…
 static PyObject * wrapper_load(PyObject *self, PyObject *args) 
 {
     int did = PyInt_AsLong(PyTuple_GetItem(args, 0));
     PyObject *fn = PyTuple_GetItem(args, 1);
     char* filename = PyString_AsString(fn);
     bool load_in_memory = (bool)PyInt_AsLong(PyTuple_GetItem(args, 2));
+    bool load_from_bin = (bool)PyInt_AsLong(PyTuple_GetItem(args, 3));
 
-    int ret = load(did, filename, load_in_memory);
-    return Py_BuildValue("i", ret);//°ÑcµÄ·µ»ØÖµn×ª»»³ÉpythonµÄ¶ÔÏó
+    int ret;
+    if (load_from_bin) {
+        ret = load_bin(did, filename, load_in_memory);
+    } else {
+        ret = load(did, filename, load_in_memory);
+    }
+    return Py_BuildValue("i", ret);//æŠŠcçš„è¿”å›å€¼nè½¬æ¢æˆpythonçš„å¯¹è±¡
 }
 
 /**
- * ½«ÄÚ´æ´ÊµäĞ´µ½ÎÄ¼ş
+ * å°†å†…å­˜è¯å…¸å†™åˆ°æ–‡ä»¶
  */
 static PyObject * wrapper_write_mem_bin(PyObject *self, PyObject *args) {
     int did = PyInt_AsLong(PyTuple_GetItem(args, 0));
@@ -359,7 +439,7 @@ static PyObject * wrapper_write_mem_bin(PyObject *self, PyObject *args) {
 
     KVDict_t* dict = g_dict_pool[did];
     dict->memory_dict.write(output_filename);
-    return Py_BuildValue("i", 0);//°ÑcµÄ·µ»ØÖµn×ª»»³ÉpythonµÄ¶ÔÏó
+    return Py_BuildValue("i", 0);//æŠŠcçš„è¿”å›å€¼nè½¬æ¢æˆpythonçš„å¯¹è±¡
 }
 
 static PyObject * wrapper_load_mem_bin(PyObject *self, PyObject *args)
@@ -374,11 +454,11 @@ static PyObject * wrapper_load_mem_bin(PyObject *self, PyObject *args)
     dict->memory_dict.clear();
     dict->memory_dict.read(dict_name);
     fprintf(stderr, "Memory dict load over. [%llu] records loaded.\n", dict->memory_dict.size());
-    return Py_BuildValue("i", 0);//°ÑcµÄ·µ»ØÖµn×ª»»³ÉpythonµÄ¶ÔÏó
+    return Py_BuildValue("i", 0);//æŠŠcçš„è¿”å›å€¼nè½¬æ¢æˆpythonçš„å¯¹è±¡
 }
 
 /**
- *  ½«Ó²ÅÌ´ÊµäµÄË÷ÒıĞ´µ½ÎÄ¼şÖĞ
+ *  å°†ç¡¬ç›˜è¯å…¸çš„ç´¢å¼•å†™åˆ°æ–‡ä»¶ä¸­
  */
 static PyObject * wrapper_write_index(PyObject *self, PyObject *args)
 {
@@ -391,7 +471,7 @@ static PyObject * wrapper_write_index(PyObject *self, PyObject *args)
     }
     KVDict_t* dict = g_dict_pool[did];
     dict->disk_dict.write(output_filename);
-    return Py_BuildValue("i", 0);//°ÑcµÄ·µ»ØÖµn×ª»»³ÉpythonµÄ¶ÔÏó
+    return Py_BuildValue("i", 0);//æŠŠcçš„è¿”å›å€¼nè½¬æ¢æˆpythonçš„å¯¹è±¡
 }
 
 static PyObject * wrapper_load_index_and_file(PyObject *self, PyObject *args)
@@ -412,7 +492,7 @@ static PyObject * wrapper_load_index_and_file(PyObject *self, PyObject *args)
     dict->fp = fopen(filename, "r");
     dict->disk_dict.read(index_file_name);
     fprintf(stderr, "Disk dict load over. [%llu] records loaded.\n", dict->disk_dict.size());
-    return Py_BuildValue("i", 0);//°ÑcµÄ·µ»ØÖµn×ª»»³ÉpythonµÄ¶ÔÏó
+    return Py_BuildValue("i", 0);//æŠŠcçš„è¿”å›å€¼nè½¬æ¢æˆpythonçš„å¯¹è±¡
 }
 
 static PyObject * wrapper_seek(PyObject *self, PyObject *args) {
@@ -426,7 +506,7 @@ static PyObject * wrapper_seek(PyObject *self, PyObject *args) {
     string out;
     int found = seek(did, key, out);
     if (found) {
-        return Py_BuildValue("s", out.c_str());
+        return Py_BuildValue("s#", out.c_str(), out.length());
     } else {
         Py_INCREF(Py_None);
         return Py_None;
@@ -440,29 +520,29 @@ static PyObject * wrapper_has(PyObject *self, PyObject *args) {
     return Py_BuildValue("i", found);
 }
 
-// 3 ·½·¨ÁĞ±í
+// 3 æ–¹æ³•åˆ—è¡¨
 static PyMethodDef CKVDictFunc[] = {
-    // ´´½¨Ò»¸ö´Êµä
+    // åˆ›å»ºä¸€ä¸ªè¯å…¸
     { "create", wrapper_create, METH_VARARGS, "create a dict."},
-    // ¶ÁÈ¡ÎÄ¼şµ½´Êµä£¬¿ÉÑ¡ÊÇ·ñÊÇÄÚ´æ½á¹¹
+    // è¯»å–æ–‡ä»¶åˆ°è¯å…¸ï¼Œå¯é€‰æ˜¯å¦æ˜¯å†…å­˜ç»“æ„
     { "load", wrapper_load, METH_VARARGS, "load files into dict."},
-    // ²éÕÒĞÅÏ¢
+    // æŸ¥æ‰¾ä¿¡æ¯
     { "find", wrapper_seek, METH_VARARGS, "search dict. return None if not exists."},
-    // ÊÇ·ñ°üº¬ÌØ¶¨key
+    // æ˜¯å¦åŒ…å«ç‰¹å®škey
     { "has", wrapper_has, METH_VARARGS, "check key in dict."},
-    // ½«ÄÚæ´ÊµäĞòÁĞ»¯µ½ÎÄ¼ş
+    // å°†å†…å­˜è¯å…¸åºåˆ—åŒ–åˆ°æ–‡ä»¶
     { "write_mem_bin", wrapper_write_mem_bin, METH_VARARGS, "write mem-dict to bin file." },
-    // ¶ÁÈ¡ĞòÁĞ»¯ºÃµÄÎÄ¼ş
+    // è¯»å–åºåˆ—åŒ–å¥½çš„æ–‡ä»¶
     { "load_mem_bin", wrapper_load_mem_bin, METH_VARARGS, "load mem-dict to bin file." },
-    // ½«Ë÷ÒıĞ´µ½Ó²ÅÌ
+    // å°†ç´¢å¼•å†™åˆ°ç¡¬ç›˜
     { "write_index",  wrapper_write_index, METH_VARARGS, "write dict to index-file."},
-    // ½«Ë÷ÒıºÍ¶ÔÓ¦µÄÎÄ¼ş¶ÁÈëµ½Ó²ÅÌ´Êµä
+    // å°†ç´¢å¼•å’Œå¯¹åº”çš„æ–‡ä»¶è¯»å…¥åˆ°ç¡¬ç›˜è¯å…¸
     { "load_index_and_files", wrapper_load_index_and_file, METH_VARARGS, "load index and files to memory." },
     { NULL, NULL, 0, NULL }
 };
-// 4 Ä£¿é³õÊ¼»¯·½·¨
+// 4 æ¨¡å—åˆå§‹åŒ–æ–¹æ³•
 PyMODINIT_FUNC initc_kvdict2(void) {
-    //³õÊ¼Ä£¿é£¬°ÑCKVDictFunc³õÊ¼µ½c_kvdictÖĞ
+    //åˆå§‹æ¨¡å—ï¼ŒæŠŠCKVDictFuncåˆå§‹åˆ°c_kvdictä¸­
     PyObject *m = Py_InitModule("c_kvdict2", CKVDictFunc);
     if (m == NULL)
         return;

@@ -1,7 +1,7 @@
 
 VERSION = 1.1.0
 CPPFLAGS =  -D__VERSION_ID__="\"$(VERSION)\"" -g -Wall -O2 -fPIC  -pipe -D_REENTRANT -DLINUX -Wall
-PYTHON_HEADER_DIR = /home/users/gusimiu/.jumbo/include/
+PYTHON_HEADER_DIR = $(HOME)/.jumbo/include/
 
 TARGET=c_kvdict2.so
 INCLUDES = -Iinclude/ \
