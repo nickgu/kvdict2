@@ -1,14 +1,13 @@
 
 VERSION = 1.1.0
 CPPFLAGS =  -D__VERSION_ID__="\"$(VERSION)\"" -g -Wall -O2 -fPIC  -pipe -D_REENTRANT -DLINUX -Wall
-PYTHON_HEADER_DIR = $(HOME)/.jumbo/include/
+PYTHON_HEADER_DIR = $(HOME)/
 
 TARGET=c_kvdict2.so
 INCLUDES = -Iinclude/ \
 		   -I$(PYTHON_HEADER_DIR) 
 		  
-LIBS =  -lcrypto \
-	   -lpthread
+LIBS =  -lpthread
 
 all: clean $(TARGET)
 	@echo 'MAKE: ALL'

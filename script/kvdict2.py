@@ -174,12 +174,9 @@ class kvdict(object):
 
 
 if __name__ == '__main__':
-    try:
-        from pygsm.arg import *
-    except:
-        from arg import *
+    import pydev
     import base64
-    arg = Arg()
+    arg = pydev.Arg()
     arg.str_opt('bin', 'i', 'load bin list')
     arg.str_opt('filename', 'f', 'input text file.')
     arg.str_opt('dump_bin', 'b', 'dump memory dict to bin')
