@@ -1,4 +1,4 @@
-# kvdict2
+# KVdict2
 
 ## 作用
 用于 Python 中加载内存词典的小工具，最主要作用是
@@ -6,28 +6,24 @@
  - 快速建词典及加载，可以很容易构建一份key-value 词典，快速读取到内存，方便使用。
 
 ## 安装及使用方式
+### 安装
 - 修改 Makefile 中 PythonPath，对应到你的 python 库
 - 执行make
 - 测试：cd output; python benchmark.py 
 如果执行ok，恭喜你
 
-# How to use in your python code.
-## Convert your text data to kvdict2 format.
-
-you can use this command to do:
+### 将数据读入
+文件是tab 分割key 和value，则使用如下命令读入。
 ```
 > python kvdict2.py -f <your_text_input> -b <kvdict2_output_dict>
 ```
-
-then if you want to check the dict. you can use this command.
+然后可以用这个命令测试下是否符合预期
 ```
 > python kvdict2.py -i <kvdict2_output_dict>
 ```
-input query to see if output is ok.
-
-## Use dict in your python code.
-
-you can use code as:
+输入key，看看输出的value 是否符合预期。
+###在代码中如何使用。
+代码中如下：
 ```
 # import package.
 import kvdict2
